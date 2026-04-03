@@ -1,0 +1,21 @@
+# ======================
+# SENSITIVE FILES
+# ======================
+backend/src/main/resources/application.properties
+
+# ======================
+# BUILD FILES
+# ======================
+backend/target/
+
+# ======================
+# IDE FILES
+# ======================
+.vscode/
+.idea/
+
+# ======================
+# OS FILES
+# ======================
+.DS_Store
+Thumbs.db

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .hero {
+            background: linear-gradient(135deg, #4f46e5, #22c55e);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .feature-card {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .admin-btn {
+            background: #dc2626;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .admin-btn:hover {
+            background: #b91c1c;
+        }
+
+        /* 🔥 SUMMARY GRID */
+        .summary-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        /* 🔥 SUMMARY CARDS */
+        .summary-card {
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .summary-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 6px 18px rgba(0,0,0,0.2);
+        }
+
+        /* COLORS */
+        .total { background: #2563eb; }       /* Blue */
+        .empty { background: #16a34a; }       /* Green */
+        .partial { background: #f59e0b; }     /* Orange */
+        .full { background: #dc2626; }        /* Red */
+        .pickup { background: #7c3aed; }      /* Purple */
+
+        .icon {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>Smart Waste Management</header>
+
+<nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="bins.html">Bins</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="reports.html">Reports</a>
+    <a href="pickups.html">Pickups</a>
+    <button onclick="logout()">Logout</button>
+</nav>
+
+<div class="container">
+
+    <!-- HERO -->
+    <div class="hero">
+        <h2 id="welcomeText"></h2>
+
+        <p>
+            Welcome to the Smart Waste Management System 🌱 <br>
+            Together, we can build cleaner and smarter cities.
+        </p>
+
+        <div id="adminPanel" style="margin-top:20px; display:none;">
+            <a href="admin.html">
+                <button class="admin-btn">👑 Manage System</button>
+            </a>
+        </div>
+    </div>
+
+    <!-- 🔥 SUMMARY -->
+    <div class="section">
+        <h3>📊 Bins Summary</h3>
+
+        <div class="summary-box" id="summaryBox">
+            Loading...
+        </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="section">
+        <h3>🌍 About This System</h3>
+        <p>
+            This platform helps monitor waste bins, manage garbage collection,
+            and allow citizens to report issues easily. It ensures timely waste
+            management and promotes a cleaner environment.
+        </p>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="section">
+        <h3>🚀 What You Can Do</h3>
+
+        <div class="features">
+            <div class="feature-card">📦 View bin status</div>
+            <div class="feature-card">🚛 Track pickups</div>
+            <div class="feature-card">📝 Report issues</div>
+            <div class="feature-card">💬 Give feedback</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+// LOGIN CHECK
+const user = JSON.parse(localStorage.getItem("user"));
+
+if (!user) {
+    window.location.href = "login.html";
+}
+
+// GREETING
+document.getElementById("welcomeText").innerHTML =
+    "Hello, <b>" + user.username + "</b> 👋";
+
+// ADMIN BUTTON
+if (user.role && user.role.toUpperCase() === "ADMIN") {
+    document.getElementById("adminPanel").style.display = "block";
+}
+
+// LOGOUT
+function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+}
+
+// 🔥 LOAD SUMMARY
+async function loadSummary() {
+
+    const res = await fetch("/api/bins");
+    const bins = await res.json();
+
+    let total = bins.length;
+    let empty = 0;
+    let partial = 0;
+    let full = 0;
+
+    bins.forEach(b => {
+        let level = b.fillLevel || 0;
+
+        if (level < 40) empty++;
+        else if (level < 70) partial++;
+        else full++;
+    });
+
+    document.getElementById("summaryBox").innerHTML = `
+        <div class="summary-card total">
+            <span class="icon">📦</span>
+            Total<br>${total}
+        </div>
+
+        <div class="summary-card empty">
+            <span class="icon">🟢</span>
+            Empty<br>${empty}
+        </div>
+
+        <div class="summary-card partial">
+            <span class="icon">🟡</span>
+            Partial<br>${partial}
+        </div>
+
+        <div class="summary-card full">
+            <span class="icon">🔴</span>
+            Full<br>${full}
+        </div>
+
+        <div class="summary-card pickup">
+            <span class="icon">🚛</span>
+            Pickup Needed<br>${full}
+        </div>
+    `;
+}
+
+// LOAD
+loadSummary();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feedback</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>Smart Waste Management</header>
+
+<nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="bins.html">Bins</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="reports.html">Reports</a>
+    <a href="pickups.html">Pickups</a>
+    <button onclick="logout()">Logout</button>
+</nav>
+
+<div class="container">
+
+    <h2>Give Feedback</h2>
+
+    <div class="card">
+        <p id="welcomeUser" style="font-weight:bold;"></p>
+        <textarea id="message" placeholder="Write your feedback..."></textarea>
+        <button onclick="submitFeedback()">Submit</button>
+    </div>
+
+    <h2>Recent Feedback</h2>
+    <div id="feedbackList"></div>
+
+</div>
+
+<script>
+
+// 🔐 GET LOGGED-IN USER
+const user = JSON.parse(localStorage.getItem("user"));
+
+// ❌ If not logged in → redirect
+if (!user) {
+    alert("Please login first!");
+    window.location.href = "login.html";
+}
+
+// LOGOUT
+function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+}
+
+// 👤 Show username
+document.getElementById("welcomeUser").innerText = "Logged in as: " + user.username;
+
+
+// LOAD FEEDBACK
+async function loadFeedback() {
+    const res = await fetch("/api/feedback");
+    const data = await res.json();
+
+    let html = "";
+
+    data.slice(-5).reverse().forEach(f => {
+        html += `
+        <div class="card">
+            <b>${f.username || "User"}</b>
+            <p>${f.message}</p>
+        </div>`;
+    });
+
+    document.getElementById("feedbackList").innerHTML = html;
+}
+
+
+// SUBMIT FEEDBACK
+async function submitFeedback() {
+
+    const message = document.getElementById("message").value;
+
+    if (!message) {
+        alert("Please enter feedback!");
+        return;
+    }
+
+    await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            username: user.username,   // ✅ AUTO FROM LOGIN
+            message: message
+        })
+    });
+
+    alert("Feedback submitted!");
+    document.getElementById("message").value = "";
+    loadFeedback();
+}
+
+loadFeedback();
+
+</script>
+
+</body>
+</html>

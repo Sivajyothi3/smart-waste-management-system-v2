@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>Admin Panel</header>
+
+<nav>
+    <a href="#" onclick="showSection('bins')">Manage Bins</a>
+    <a href="#" onclick="showSection('reports')">Manage Reports</a>
+    <a href="#" onclick="showSection('pickups')">Manage Pickups</a>
+    <a href="dashboard.html">Back to Dashboard</a>
+</nav>
+
+<div class="container">
+
+    <!-- ================= BINS ================= -->
+    <div id="binsSection">
+
+        <h2>Add New Bin</h2>
+
+        <div class="card">
+            <input id="location" placeholder="Location">
+            <input id="city" placeholder="City/Mandal/Village">
+            <input id="district" placeholder="District">
+            <input id="state" placeholder="State">
+            <input id="fillLevel" type="number" placeholder="Fill Level %">
+
+            <button onclick="addBin()">Add Bin</button>
+        </div>
+
+        <h2>Search Bins</h2>
+
+        <!-- 🔍 SEARCH -->
+        <div class="card">
+            <select id="districtFilterBins">
+                <option value="">All Districts</option>
+            </select>
+
+            <select id="stateFilterBins">
+                <option value="">All States</option>
+            </select>
+
+            <button onclick="loadBins()">Search</button>
+        </div>
+
+        <h2>All Bins</h2>
+        <div id="binList"></div>
+
+    </div>
+
+    <!-- ================= REPORTS ================= -->
+    <div id="reportsSection" style="display:none;">
+        <h2>Manage Reports</h2>
+        <div id="reportList"></div>
+    </div>
+
+    <!-- ================= PICKUPS ================= -->
+    <div id="pickupsSection" style="display:none;">
+
+        <h2>Search Pickups</h2>
+
+        <!-- 🔍 SEARCH -->
+        <div class="card">
+            <select id="districtFilterPickups">
+                <option value="">All Districts</option>
+            </select>
+
+            <select id="stateFilterPickups">
+                <option value="">All States</option>
+            </select>
+
+            <button onclick="loadPickups()">Search</button>
+        </div>
+
+        <h2>Manage Pickups</h2>
+        <div id="pickupList"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+// 🔐 ADMIN CHECK
+const user = JSON.parse(localStorage.getItem("user"));
+
+if (!user || user.role !== "ADMIN") {
+    alert("Access Denied!");
+    window.location.href = "login.html";
+}
+
+// ================= SWITCH SECTIONS =================
+function showSection(section) {
+    document.getElementById("binsSection").style.display = "none";
+    document.getElementById("reportsSection").style.display = "none";
+    document.getElementById("pickupsSection").style.display = "none";
+
+    document.getElementById(section + "Section").style.display = "block";
+}
+
+// ================= GLOBAL =================
+let allBins = [];
+
+// ================= BINS =================
+async function loadBins() {
+
+    if (allBins.length === 0) {
+        const res = await fetch("/api/bins");
+        allBins = await res.json();
+        populateFilters();
+    }
+
+    const district = document.getElementById("districtFilterBins").value;
+    const state = document.getElementById("stateFilterBins").value;
+
+    let html = "";
+
+    allBins.forEach(bin => {
+
+        if (
+            (district && bin.district !== district) ||
+            (state && bin.state !== state)
+        ) return;
+
+        html += `
+        <div class="card">
+            <b>${bin.location}</b>
+            <p>${bin.city}, ${bin.district}, ${bin.state}</p>
+
+            <input type="number" id="bin${bin.id}" value="${bin.fillLevel}">
+            <button onclick="updateBin(${bin.id})">Update</button>
+            <button onclick="deleteBin(${bin.id})">Delete</button>
+        </div>`;
+    });
+
+    document.getElementById("binList").innerHTML = html;
+}
+
+// ADD BIN
+async function addBin() {
+
+    const bin = {
+        location: document.getElementById("location").value,
+        city: document.getElementById("city").value,
+        district: document.getElementById("district").value,
+        state: document.getElementById("state").value,
+        fillLevel: document.getElementById("fillLevel").value
+    };
+
+    await fetch("/api/bins", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bin)
+    });
+
+    alert("Bin Added!");
+    allBins = []; // reload fresh data
+    loadBins();
+}
+
+// UPDATE BIN
+async function updateBin(id) {
+    const level = document.getElementById("bin" + id).value;
+
+    await fetch("/api/bins/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fillLevel: level })
+    });
+
+    alert("Updated!");
+    allBins = [];
+    loadBins();
+}
+
+// DELETE BIN
+async function deleteBin(id) {
+    await fetch("/api/bins/" + id, { method: "DELETE" });
+
+    alert("Deleted!");
+    allBins = [];
+    loadBins();
+}
+
+// ================= REPORTS =================
+async function loadReports() {
+    const res = await fetch("/api/reports");
+    const data = await res.json();
+
+    let html = "";
+
+    data.forEach(r => {
+        html += `
+        <div class="card">
+            <b>${r.location}</b>
+            <p>${r.description}</p>
+
+            
+
+            <select id="report${r.id}">
+                <option ${r.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                <option>Resolved</option>
+            </select>
+
+            <button onclick="updateReport(${r.id})">Update</button>
+        </div>`;
+    });
+
+    document.getElementById("reportList").innerHTML = html;
+}
+
+async function updateReport(id) {
+    const status = document.getElementById("report" + id).value;
+
+    await fetch("/api/reports/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: status })
+    });
+
+    alert("Updated!");
+    loadReports();
+}
+
+// ================= PICKUPS =================
+async function loadPickups() {
+
+    if (allBins.length === 0) {
+        const res = await fetch("/api/bins");
+        allBins = await res.json();
+        populateFilters();
+    }
+
+    const district = document.getElementById("districtFilterPickups").value;
+    const state = document.getElementById("stateFilterPickups").value;
+
+    let html = "";
+
+    allBins.forEach(bin => {
+
+        if (bin.fillLevel < 70) return;
+
+        if (
+            (district && bin.district !== district) ||
+            (state && bin.state !== state)
+        ) return;
+
+        html += `
+        <div class="card">
+            <b>${bin.location}</b>
+            <p>${bin.city}, ${bin.district}, ${bin.state}</p>
+
+            <select id="pickup${bin.id}">
+                <option>Pending</option>
+                <option>Completed</option>
+            </select>
+
+            <button onclick="updatePickup(${bin.id})">Update</button>
+        </div>`;
+    });
+
+    document.getElementById("pickupList").innerHTML =
+        html || "<p>No pickups</p>";
+}
+
+// UPDATE PICKUP
+async function updatePickup(id) {
+
+    await fetch("/api/bins/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            fillLevel: 0   // 🔥 make bin empty
+        })
+    });
+
+    alert("Pickup Completed!");
+    allBins = [];
+    loadPickups();
+}
+
+// ================= FILTERS =================
+function populateFilters() {
+
+    const districts = [...new Set(allBins.map(b => b.district))];
+    const states = [...new Set(allBins.map(b => b.state))];
+
+    const d1 = document.getElementById("districtFilterBins");
+    const s1 = document.getElementById("stateFilterBins");
+    const d2 = document.getElementById("districtFilterPickups");
+    const s2 = document.getElementById("stateFilterPickups");
+
+    // ✅ CLEAR OLD VALUES FIRST (VERY IMPORTANT)
+    d1.innerHTML = '<option value="">All Districts</option>';
+    s1.innerHTML = '<option value="">All States</option>';
+    d2.innerHTML = '<option value="">All Districts</option>';
+    s2.innerHTML = '<option value="">All States</option>';
+
+    // ✅ ADD VALUES (NO DUPLICATES)
+    districts.forEach(d => {
+        d1.innerHTML += `<option value="${d}">${d}</option>`;
+        d2.innerHTML += `<option value="${d}">${d}</option>`;
+    });
+
+    states.forEach(s => {
+        s1.innerHTML += `<option value="${s}">${s}</option>`;
+        s2.innerHTML += `<option value="${s}">${s}</option>`;
+    });
+}
+// INITIAL LOAD
+loadBins();
+loadReports();
+loadPickups();
+
+</script>
+
+</body>
+</html>

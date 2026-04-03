@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Waste Management</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #4f46e5, #22c55e);
+            color: white;
+        }
+
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(0,0,0,0.3);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        header a {
+            background: white;
+            color: #4f46e5;
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        header a:hover {
+            background: #ddd;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .hero h2 {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            max-width: 700px;
+            margin: auto;
+            line-height: 1.6;
+        }
+
+        /* FEATURES */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            color: black;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .feature-card h3 {
+            margin-bottom: 10px;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+    <h1>Smart Waste Management</h1>
+    <a href="login.html">Login</a>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+    <h2>Cleaner Cities, Smarter Future 🌱</h2>
+    <p>
+        Smart Waste Management System helps cities manage garbage efficiently by tracking bin levels,
+        optimizing waste collection, and enabling citizens to report issues instantly.
+        It ensures cleaner surroundings and better urban living.
+    </p>
+</div>
+
+<!-- FEATURES -->
+<div class="features">
+
+    <div class="feature-card">
+        <h3>📊 Real-Time Bin Monitoring</h3>
+        <p>
+            Track fill levels of bins across different locations and identify which bins need immediate attention.
+        </p>
+    </div>
+
+    <div class="feature-card">
+        <h3>🚛 Smart Pickup Management</h3>
+        <p>
+            Automatically identify full bins and schedule waste collection efficiently to reduce overflow.
+        </p>
+    </div>
+
+    <div class="feature-card">
+        <h3>📝 User Feedback</h3>
+        <p>
+            Citizens can share feedback to improve waste management services and maintain cleanliness.
+        </p>
+    </div>
+
+    <div class="feature-card">
+        <h3>📍 Report Issues</h3>
+        <p>
+            Users can report garbage issues with location and images for faster resolution.
+        </p>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+    © 2026 Smart Waste Management System | Designed for Clean & Green Cities 🌍
+</footer>
+
+</body>
+</html>

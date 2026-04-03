@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="auth-body">
+
+<div class="auth-container">
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Login to Smart Waste System</p>
+
+    <input type="email" id="email" placeholder="Enter Email">
+
+    <div style="position: relative;">
+        <input type="password" id="password" placeholder="Enter Password">
+        <span onclick="togglePassword()" 
+              style="position:absolute; right:10px; top:12px; cursor:pointer;">SHOW</span>
+    </div>
+
+    <button onclick="login()">Login</button>
+
+    <p class="switch">
+        Don't have an account? <a href="signup.html">Signup</a>
+    </p>
+</div>
+
+<script>
+function togglePassword() {
+    const pass = document.getElementById("password");
+    pass.type = pass.type === "password" ? "text" : "password";
+}
+
+async function login() {
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+        alert("Please enter email and password");
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:8080/api/auth/login", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ email, password })
+        });
+
+        if (!response.ok) {
+            alert("Invalid Email or Password ");
+            return;
+        }
+
+        const data = await response.json();
+
+        if (data && data.id) {
+            localStorage.setItem("user", JSON.stringify(data));
+            alert("Login Successful ");
+            window.location.href = "dashboard.html";
+        } else {
+            alert("Invalid credentials ");
+        }
+
+    } catch (error) {
+        alert("Server error");
+        console.error(error);
+    }
+}
+</script>
+
+</body>
+</html>

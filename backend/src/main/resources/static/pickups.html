@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pickups</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>Smart Waste Management</header>
+
+<nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="bins.html">Bins</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="reports.html">Reports</a>
+    <a href="pickups.html">Pickups</a>
+    <button onclick="logout()">Logout</button>
+</nav>
+
+<div class="container">
+
+    <h2>Search Pickups</h2>
+
+    <div class="card">
+        <select id="districtFilter"></select>
+        <select id="stateFilter"></select>
+        <button onclick="filterPickups()">Search</button>
+    </div>
+
+    <h2>Pickup Required Bins</h2>
+    <div id="pickupList"></div>
+
+</div>
+
+<script>
+
+function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+}
+
+let allBins = [];
+
+// 🎨 COLOR
+function getColor(fill) {
+    if (fill < 40) return "#16a34a";
+    if (fill < 70) return "#f59e0b";
+    return "#dc2626";
+}
+
+// LOAD ONCE
+async function loadPickups() {
+    const res = await fetch("/api/bins");
+    allBins = await res.json();
+
+    populateFilters();
+    renderPickups(allBins);
+}
+
+// FILTER
+function filterPickups() {
+
+    const district = document.getElementById("districtFilter").value;
+    const state = document.getElementById("stateFilter").value;
+
+    const filtered = allBins.filter(bin =>
+        bin.fillLevel >= 70 &&
+        (!district || bin.district === district) &&
+        (!state || bin.state === state)
+    );
+
+    renderPickups(filtered);
+}
+
+// RENDER
+function renderPickups(data) {
+
+    let html = "";
+
+    data.forEach(bin => {
+
+        if (bin.fillLevel < 70) return;
+
+        const fill = bin.fillLevel;
+
+        html += `
+        <div class="card">
+            <h3>${bin.location}</h3>
+            <p>${bin.city}, ${bin.district}, ${bin.state}</p>
+            <p><b>Fill Level:</b> ${fill}%</p>
+
+            <div style="background:#eee;height:12px;border-radius:10px;">
+                <div style="
+                    width:${fill}%;
+                    height:12px;
+                    border-radius:10px;
+                    background:${getColor(fill)};
+                "></div>
+            </div>
+        </div>`;
+    });
+
+    document.getElementById("pickupList").innerHTML =
+        html || "<p>No pickups 🚛</p>";
+}
+
+// FILTER OPTIONS
+function populateFilters() {
+
+    const districts = [...new Set(allBins.map(b => b.district))];
+    const states = [...new Set(allBins.map(b => b.state))];
+
+    const d = document.getElementById("districtFilter");
+    const s = document.getElementById("stateFilter");
+
+    d.innerHTML = `<option value="">All Districts</option>`;
+    s.innerHTML = `<option value="">All States</option>`;
+
+    districts.forEach(x => {
+        d.innerHTML += `<option value="${x}">${x}</option>`;
+    });
+
+    states.forEach(x => {
+        s.innerHTML += `<option value="${x}">${x}</option>`;
+    });
+}
+
+// START
+loadPickups();
+
+</script>
+
+</body>
+</html>

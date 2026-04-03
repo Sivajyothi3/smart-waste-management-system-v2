@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reports</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>Smart Waste Management</header>
+
+<nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="bins.html">Bins</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="reports.html">Reports</a>
+    <a href="pickups.html">Pickups</a>
+    <button onclick="logout()">Logout</button>
+</nav>
+
+<div class="container">
+
+    <h2>Report Waste Issue</h2>
+
+    <div class="card">
+        <input id="location" placeholder="Enter Location">
+
+        <textarea id="description" placeholder="Describe the issue"></textarea>
+
+        <!-- STATUS FIELD -->
+        <select id="binStatus">
+            <option value="EMPTY">Empty</option>
+            <option value="PARTIAL">Partially Filled</option>
+            <option value="FULL">Full</option>
+            <option value="DAMAGED">Damaged</option>
+        </select>
+
+        <!-- ❌ IMAGE REMOVED -->
+
+        <button onclick="submitReport()">Submit Report</button>
+    </div>
+
+    <h2>Recent Reports</h2>
+    <div id="reportList"></div>
+
+</div>
+
+<script>
+
+// LOGOUT
+function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+}
+
+// LOAD REPORTS
+async function loadReports() {
+    const res = await fetch("/api/reports");
+    const data = await res.json();
+
+    let html = "";
+
+    data.forEach(r => {
+
+        // COLOR BASED ON STATUS
+        let color = "black";
+        if (r.binStatus === "FULL") color = "red";
+        else if (r.binStatus === "PARTIAL") color = "orange";
+        else if (r.binStatus === "EMPTY") color = "green";
+        else if (r.binStatus === "DAMAGED") color = "purple";
+
+        html += `
+        <div class="card">
+            <h3>${r.location}</h3>
+            <p>${r.description}</p>
+
+            <p>
+                <b>Bin Status:</b>
+                <span style="color:${color};font-weight:bold;">
+                    ${r.binStatus}
+                </span>
+            </p>
+        </div>`;
+    });
+
+    document.getElementById("reportList").innerHTML = html;
+}
+
+
+// SUBMIT REPORT
+async function submitReport() {
+    const location = document.getElementById("location").value;
+    const description = document.getElementById("description").value;
+    const binStatus = document.getElementById("binStatus").value;
+
+    await fetch("/api/reports", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            location: location,
+            description: description,
+            binStatus: binStatus
+        })
+    });
+
+    alert("Report Submitted!");
+    loadReports();
+}
+
+// LOAD ON START
+loadReports();
+
+</script>
+
+</body>
+</html>
