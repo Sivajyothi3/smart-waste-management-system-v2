@@ -1,8 +1,12 @@
-# 🌱 Smart Waste Management System
+🌱 Smart Waste Management System
 
-## 📌 Project Overview
+🚀 Live Demo: Click here to open the application
 
-The **Smart Waste Management System** is a web-based application designed to improve city cleanliness by efficiently managing waste collection, monitoring bin levels, and enabling users to report issues.
+📂 Source Code: GitHub Repository
+
+📌 Project Overview
+
+The Smart Waste Management System is a web-based application designed to improve city cleanliness by efficiently managing waste collection, monitoring bin levels, and enabling users to report issues.
 
 It helps:
 
@@ -78,20 +82,21 @@ It helps:
 
 ## 🏗️ Tech Stack
 
-### Frontend
+**Frontend**
+- HTML
+- CSS
+- JavaScript
 
-* HTML
-* CSS
-* JavaScript
+**Backend**
+- Java
+- Spring Boot
 
-### Backend
+**Database**
+- MySQL (TiDB Cloud)
 
-* Java (Spring Boot)
-
-### Database
-
-* MySQL
-
+**Deployment**
+- Render (Backend Hosting)
+- TiDB Cloud (Database Hosting)
 ---
 
 
@@ -169,34 +174,39 @@ It helps:
 
 
 ---
+## ⚙️ How to Run the Project Locally
 
-## ⚙️ How to Run the Project
+### Prerequisites
+- Java JDK 17 or later
+- Maven
+- MySQL or TiDB Cloud database
 
-1. Clone the repository:
+### Steps
 
+**1. Clone the repository**
 ```bash
-git clone https://github.com/your-username/smart-waste-management-system.git
+git clone https://github.com/Sivajyothi3/smart-waste-management-system-v2.git
 ```
 
-2. Navigate to backend:
-
+**2. Navigate to the backend directory**
 ```bash
-cd backend
+cd smart-waste-management-system-v2/backend
 ```
 
-3. Configure database in `application.properties`
+**3. Configure the database**
 
-4. Run the project:
+Configure your database URL, username, and password in `application.properties`. Refer to `application-example.properties` for the configuration format.
 
+**4. Run the application**
 ```bash
 mvn spring-boot:run
 ```
 
-5. Open in browser:
+**5. Open the application**
 
-```
-http://localhost:8080
-```
+Visit http://localhost:8080 in your browser.
+
+**Note:** Keep database credentials private. Never commit passwords or sensitive configuration details to GitHub.
 
 ---
 
@@ -209,11 +219,10 @@ Use `application-example.properties` as a reference.
 
 ## 🎯 Future Enhancements
 
-* Real-time bin tracking using IoT
-* Map integration for location tracking
-* Notifications for garbage collection
-* Mobile app support
-* Deploy on cloud
+- Real-time bin tracking using IoT
+- Map integration for location tracking
+- Notifications for garbage collection
+- Mobile app support
 
 ---
 
