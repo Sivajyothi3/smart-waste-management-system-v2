@@ -1,20 +1,19 @@
-🌱 Smart Waste Management System
+# 🌱 Smart Waste Management System
 
-🚀 Live Demo: Click here to open the application
+🚀 **Live Demo:** https://smart-waste-management-system-v2.onrender.com/
 
-📂 Source Code: GitHub Repository
+📂 **GitHub Repository:** https://github.com/Sivajyothi3/smart-waste-management-system-v2
 
-📌 Project Overview
+## 📌 Project Overview
 
 The Smart Waste Management System is a web-based application designed to improve city cleanliness by efficiently managing waste collection, monitoring bin levels, and enabling users to report issues.
 
 It helps:
 
-* Track bin status (empty, partially filled, full)
-* Optimize waste collection
-* Allow users to report garbage issues
-* Provide admin control for managing the system
-
+- Track bin status (empty, partially filled, full)
+- Optimize waste collection
+- Allow users to report garbage issues
+- Provide admin control for managing the system
 ---
 
 ## 🚀 Features
